@@ -20,23 +20,29 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_sqlite mbstring xml fileinfo
+RUN docker-php-ext-install pdo_sqlite mbstring xml fileinfo curl
 
 # Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copy package files first
+# Copy composer files first
+COPY composer.json composer.lock ./
+
+# Install composer dependencies
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Copy package files
 COPY package.json ./
 RUN npm install
 
-# Copy composer files
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
 # Copy the rest of the application
 COPY . .
+
+# Run composer scripts now that the full application is available
+RUN composer dump-autoload --optimize
 
 # Set permissions
 RUN chmod -R 777 storage bootstrap/cache
