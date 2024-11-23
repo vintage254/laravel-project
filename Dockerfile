@@ -38,9 +38,25 @@ WORKDIR /app
 # Copy composer files first
 COPY composer.json composer.lock ./
 
-# Install composer dependencies
+# Create required directories
+RUN mkdir -p \
+    storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/testing \
+    bootstrap/cache
+
+# Set permissions
+RUN chmod -R 777 storage bootstrap/cache
+
+# Install composer dependencies with verbose output
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-scripts \
+    --verbose
 
 # Copy package files
 COPY package.json ./
@@ -51,9 +67,6 @@ COPY . .
 
 # Run composer scripts now that the full application is available
 RUN composer dump-autoload --optimize
-
-# Set permissions
-RUN chmod -R 777 storage bootstrap/cache
 
 # Build assets
 RUN npm run build
