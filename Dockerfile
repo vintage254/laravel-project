@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
+    libcurl4-openssl-dev \
     zip \
     unzip \
     sqlite3 \
@@ -20,7 +22,13 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_sqlite mbstring xml fileinfo curl
+RUN docker-php-ext-install \
+    pdo_sqlite \
+    mbstring \
+    xml \
+    fileinfo \
+    zip \
+    curl
 
 # Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
