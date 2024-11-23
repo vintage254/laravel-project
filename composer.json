@@ -9,6 +9,10 @@
         "php": "^8.1",
         "ext-pdo": "*",
         "ext-pdo_sqlite": "*",
+        "ext-mbstring": "*",
+        "ext-xml": "*",
+        "ext-curl": "*",
+        "ext-fileinfo": "*",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9"
     },
