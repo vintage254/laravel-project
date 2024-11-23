@@ -8,7 +8,9 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    sqlite3 \
+    libsqlite3-dev
 
 # Install Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
@@ -18,40 +20,36 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath xml
-
-# Install SQLite
-RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev \
-    && docker-php-ext-install pdo_sqlite
+RUN docker-php-ext-install pdo_sqlite mbstring xml fileinfo
 
 # Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
-WORKDIR /var/www
+WORKDIR /app
 
-# Copy composer files first to leverage Docker cache
+# Copy package files first
+COPY package.json ./
+RUN npm install
+
+# Copy composer files
 COPY composer.json composer.lock ./
-COPY package.json package-lock.json ./
-
-# Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
-RUN npm ci
 
 # Copy the rest of the application
 COPY . .
 
-# Create SQLite database and set permissions
-RUN touch database/database.sqlite
-RUN chmod -R 777 storage bootstrap/cache database
-
-# Generate application cache
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+# Set permissions
+RUN chmod -R 777 storage bootstrap/cache
 
 # Build assets
 RUN npm run build
+
+# Prepare the application
+RUN touch database/database.sqlite
+RUN chmod -R 777 database
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
 EXPOSE 8000
 
