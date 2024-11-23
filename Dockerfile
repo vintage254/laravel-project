@@ -78,6 +78,16 @@ RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
 
+# Add better logging
+RUN ln -sf /dev/stdout /app/storage/logs/laravel.log
+
+# Modify healthcheck to be more basic
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
+    CMD php artisan --version || exit 1
+
+# Make sure PORT is explicitly set
+ENV PORT=8000
+
 EXPOSE ${PORT:-8000}
 
-CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT}"]
+CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT} --verbose"]

@@ -9,6 +9,10 @@ Route::redirect('/', '/welcome')->name('dashboard');
 
 Route::get('/', [WelcomeController::class, 'welcome'])->name('welcome');
 
+Route::get('/up', function () {
+    return response('OK', 200);
+});
+
 Route::middleware('auth')-> group(function () {
     Route::resource('note', NoteController::class);
 });
