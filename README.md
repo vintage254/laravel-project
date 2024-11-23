@@ -19,6 +19,7 @@ A web application built with Laravel for managing notes.
 6. Run `php artisan serve`
 
    ##demontration
+   
 https://github.com/user-attachments/assets/214bbe3b-6b0f-496e-8333-8c993ea87cff
 
 ## deployed site
