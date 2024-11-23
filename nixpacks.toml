@@ -1,21 +1,19 @@
 [phases.setup]
-aptPkgs = [
-    "php8.1",
-    "php8.1-cli",
-    "php8.1-common",
-    "php8.1-sqlite3",
-    "php8.1-xml",
-    "php8.1-curl",
-    "php8.1-mbstring",
-    "php8.1-zip",
-    "sqlite3",
-    "nodejs",
-    "npm"
+nixPkgs = [
+    "php81",
+    "php81Extensions.pdo",
+    "php81Extensions.pdo_sqlite",
+    "php81Extensions.mbstring",
+    "php81Extensions.xml",
+    "php81Extensions.curl",
+    "php81Extensions.zip",
+    "php81Packages.composer",
+    "nodejs_18",
+    "sqlite"
 ]
 
 [phases.install]
 cmds = [
-    "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer",
     "composer install --no-dev --optimize-autoloader",
     "npm ci",
     "touch database/database.sqlite",
