@@ -1,1 +1,8 @@
- 
+/node_modules
+/vendor
+.git
+.env
+.env.example
+.gitignore
+.gitattributes
+README.md
